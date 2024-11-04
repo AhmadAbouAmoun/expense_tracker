@@ -1,0 +1,22 @@
+nav {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 1.5rem; 
+    position: relative; 
+    background-color: #f8f8f8; 
+  }
+  
+  .welcome {
+    margin: 0; 
+    flex-shrink: 0;
+    font-size: 25px;
+  }
+  
+  .logo {
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%);
+    height: 50px; 
+    width: auto;
+  }

@@ -6,58 +6,30 @@ const user = localStorage.getItem("userName") || "User";
 const welcome = document.querySelector(".welcome");
 welcome.innerHTML += `${user} !`;
 
-function getExpenses() {
-    const userId = localStorage.getItem("userId"); // Get userId from localStorage
+const displayMovements = function (movements) {
+    const containerMovements = document.getElementById("containerMovements");
+    containerMovements.innerHTML = "";
+    movements.forEach(function (mov, i) {
+        const type = mov.type;
+        const div = document.createElement("div");
+        div.classList.add("movements__row");
+        const html = `
+        <div class="movements__row">
+        <svg onclick="dlt(${mov.id})"  class="ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+        <svg  onclick="edit(${mov.id})" class="ico"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"/></svg>
+          <div class="movements__type movements__type--${type}">
+            ${type}
+          </div>
+          <div class="movements__date">${mov.date}</div>
+          <p class="movements__note"> ${mov.note} </p>
 
-    if (!userId) {
-        alert("User is not logged in.");
-        return;
-    }
+          <div class="movements__value">${mov.amount}€</div>
+        </div>
+      `;
 
-    const requestData = {
-        userId: userId,
-    };
-
-    fetch("php_folder/getExpenses.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-    })
-    .then((response) => response.json())
-    .then((expenses) => {
-        if (expenses.status === "error") {
-            alert(expenses.message);
-        } else {
-            displayExpenses(expenses);
-        }
-    })
-    .catch((error) => {
-        console.error("Error fetching expenses:", error);
-        alert("Error occurred while fetching expenses");
+        containerMovements.insertAdjacentHTML("afterbegin", html);
     });
-}
-function displayExpenses(expenses) {
-    const expenseList = document.getElementById("expense-list");
-    expenseList.innerHTML = "";
-
-    if (expenses.length === 0) {
-        expenseList.innerHTML = "<p>No expenses found.</p>";
-    } else {
-        expenses.forEach((expense) => {
-            const expenseItem = document.createElement("div");
-            expenseItem.classList.add("expense-item"); // You can add some styling here
-
-            const expenseText = document.createElement("p");
-            expenseText.innerHTML = `Amount: $${expense.amount} | Note: ${expense.note}`;
-
-            expenseItem.appendChild(expenseText);
-            expenseList.appendChild(expenseItem);
-        });
-    }
-}
-getExpenses();
+};
 document.addEventListener("DOMContentLoaded", () => {
     let movs = JSON.parse(localStorage.getItem("movements")) || [];
 
@@ -111,42 +83,18 @@ const updateUI = function (movements) {
     calcDisplaySummary(movements);
 };
 function expensesSubmit() {
+    let movements = JSON.parse(localStorage.getItem("movements")) || [];
+
     const expensesNote = document.getElementById("expenses-note").value;
     const expensesAmount = parseFloat(document.getElementById("expenses-amount").value);
-    const userId = 1;
-
     if (expensesAmount && expensesNote) {
-        const date = new Date().toLocaleDateString("en-US");
-        fetch("php_folder/createExpense.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                amount: expensesAmount,
-                note: expensesNote,
-                userId: userId,
-                date: date,
-            }),
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.status === "success") {
-                getExpenses();
-            } else {
-                alert("Failed to add expense: " + data.message);
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            alert("Error occurred while adding expense");
-        });
+        update(movements, movements.length + 1, "expenses", expensesNote, expensesAmount);
+        updateUI(movements);
         document.getElementById("expenses-note").value = "";
         document.getElementById("expenses-amount").value = "";
-    } else {
-        alert("Please enter both note and amount");
-    }
+    } else alert("Please enter both note and amount");
 }
+
 function incomeSubmit() {
     let movements = JSON.parse(localStorage.getItem("movements")) || [];
 
@@ -163,7 +111,7 @@ function incomeSubmit() {
 function update(movements, id, type, note, amount) {
     const date = new Date();
     const options = {year: "numeric", month: "2-digit", day: "2-digit"};
-    const formattedDate = date.toLocaleDateString("en-US", options);
+    const formattedDate = date.toLocaleDateString("en-US", options); // Example format: MM/DD/YYYY
 
     const obj = {
         id,

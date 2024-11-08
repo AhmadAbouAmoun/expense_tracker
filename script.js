@@ -195,11 +195,17 @@ function toggleCard() {
     amountInput.value = "";
 }
 fetch("php_folder/connection.php")
-.then((response) => response.json()) // Parse the JSON response
+.then((response) => {
+    if (!response.ok) {
+        console.log("fetching failed");
+    }
+    return response.json();
+})
 .then((data) => {
     if (data.status === "success") {
-        console.log(data.message); // Logs "Connection established"
+        console.log(data.message);
     } else {
-        console.error(data.message); // Logs error message if any
+        console.error(data.message);
     }
-});
+})
+.catch((error) => console.error("Fetch error:", error));

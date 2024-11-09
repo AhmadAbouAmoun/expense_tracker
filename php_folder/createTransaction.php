@@ -9,7 +9,7 @@ $user_id=$_GET["user_id"];
 
 $query = $connection->prepare("INSERT INTO transaction(type,amount,note,date,user_id) VALUES (?,?,?,?, ?)");
 
-$query->bind_param("sisdi", $type, $amount,$note,$date,$user_id); 
+$query->bind_param("sissi", $type, $amount,$note,$date,$user_id); 
 
 if ($query->execute() === TRUE) {
     $transaction_id = $connection->insert_id;

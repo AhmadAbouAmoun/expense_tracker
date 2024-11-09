@@ -5,16 +5,11 @@ $id = $_GET["id"];
 $user_name = $_GET["name"];
 $budget = $_GET["budget"];
 
-// Check if all parameters are provided
-if (!isset($id) || !isset($user_name) || !isset($budget)) {
-    die("Error: 'id', 'username', or 'budget' parameter not provided in URL.");
-}
 
-// Prepare the SQL statement with placeholders
+
 $query = $connection->prepare("UPDATE users SET name = ?, budget = ? WHERE user_id = ?");
 
-// Bind the parameters to the placeholders
-$query->bind_param("sii", $user_name, $budget, $id); // "s" for string, "i" for integer
+$query->bind_param("sii", $user_name, $budget, $id);
 
 if ($query->execute() === TRUE) {
     $response = [
@@ -27,5 +22,5 @@ if ($query->execute() === TRUE) {
 }
 
 $query->close();
-$connection->close(); // Close the connection
+$connection->close();
 exit;

@@ -6,7 +6,9 @@ $note=$_GET["note"];
 $date=$_GET["date"];
 $user_id=$_GET["user_id"];
 
-
+if($type=="expense"){
+    $amount=$amount*-1;
+}
 $query = $connection->prepare("INSERT INTO transaction(type,amount,note,date,user_id) VALUES (?,?,?,?, ?)");
 
 $query->bind_param("sissi", $type, $amount,$note,$date,$user_id); 

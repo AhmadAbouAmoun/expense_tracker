@@ -1,7 +1,7 @@
 <?php
 include "connection.php";
-$user_name = $_GET["username"];
-$budget = $_GET["budget"];
+$user_name = $_POST["username"];
+$budget = $_POST["budget"];
 
 $query = $connection->prepare("INSERT INTO users(name, budget) VALUES (?, ?)");
 

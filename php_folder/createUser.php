@@ -5,19 +5,19 @@ $budget = $_GET["budget"];
 
 $query = $connection->prepare("INSERT INTO users(name, budget) VALUES (?, ?)");
 
-$query->bind_param("si", $user_name, $budget); // "s" for string, "i" for integer
+$query->bind_param("si", $user_name, $budget); 
 
 if ($query->execute() === TRUE) {
-    $user_id = $connection->insert_id; // Get the last inserted ID
+    $user_id = $connection->insert_id;
     $response = [
         "status" => "success",
         "message" => "User with ID $user_id has been added"
     ];
     echo json_encode($response);
 } else {
-    echo "Failed: " . $query->error; // Show detailed error message if failed
+    echo "Failed: " . $query->error; 
 }
 
 $query->close();
-$connection->close(); // Close the connection
+$connection->close(); 
 exit;

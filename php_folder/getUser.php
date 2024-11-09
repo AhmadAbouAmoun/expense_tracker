@@ -2,10 +2,10 @@
 
 include "connection.php";
 
-$id = $_POST["id"] ?? null;
+$id = $_GET["id"] ;
 
 if($id != null){
-  $query = $connection->prepare("SELECT * FROM users WHERE id = $id");
+  $query = $connection->prepare("SELECT * FROM users WHERE user_id = $id");
 
   $query->execute();
 

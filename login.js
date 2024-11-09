@@ -4,20 +4,23 @@ document.getElementById("signupForm").addEventListener("submit", function (event
     let budget = document.getElementById("budget").value;
     fetch("php_folder/createUser.php", {
         method: "POST",
-        headers: {},
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: `username=${userName}&budget=${budget}`,
     })
     .then((response) => {
-        response.json();
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
     })
     .then((data) => {
         if (data.status === "success") {
-            alert("User added successfully!");
+            localStorage.setItem("id", data.id);
             window.location.href = "money.html";
         } else {
-            alert(`Failed to add user: ${data.message}`);
+            alert("Failed to add user: " + (data.message || "Unknown error"));
         }
-    })
-    .catch((error) => console.error("Error:", error));
-    window.location.href = "money.html";
+    });
 });

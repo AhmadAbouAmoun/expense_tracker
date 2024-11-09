@@ -87,12 +87,28 @@ function expensesSubmit() {
 
     const expensesNote = document.getElementById("expenses-note").value;
     const expensesAmount = parseFloat(document.getElementById("expenses-amount").value);
-    if (expensesAmount && expensesNote) {
-        update(movements, movements.length + 1, "expenses", expensesNote, expensesAmount);
-        updateUI(movements);
-        document.getElementById("expenses-note").value = "";
-        document.getElementById("expenses-amount").value = "";
-    } else alert("Please enter both note and amount");
+    $date = new Date().toISOString();
+
+    fetch("php_folder/createTransaction.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `user_id=${user_id}&type=${type}&note=${expensesNote}&date=${date}&amount=${expensesAmount}`,
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.status === "success") {
+            alert("Transaction added successfully");
+            updateUI();
+        } else {
+            alert("Failed to add transaction");
+        }
+    })
+    .catch((error) => {
+        console.error("Error adding transaction:", error);
+        alert("There was an error processing your request.");
+    });
 }
 
 function incomeSubmit() {

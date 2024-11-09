@@ -11,7 +11,9 @@ if ($query->execute() === TRUE) {
     $user_id = $connection->insert_id;
     $response = [
         "status" => "success",
-        "message" => "User with ID $user_id has been added"
+        "message" => "User with ID $user_id has been added",
+        "id"=>$user_id
+
     ];
     echo json_encode($response);
 } else {
